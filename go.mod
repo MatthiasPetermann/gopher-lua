@@ -1,4 +1,4 @@
-module github.com/MatthiasPetermann/gopher-lua
+module github.com/yuin/gopher-lua
 
 go 1.17
 
