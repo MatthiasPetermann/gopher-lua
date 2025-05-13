@@ -33,6 +33,7 @@ func mainLoop(L *LState, baseframe *callFrame) {
 func mainLoopWithContext(L *LState, baseframe *callFrame) {
 	var inst uint32
 	var cf *callFrame
+	instrCounter := 0
 
 	if L.stack.IsEmpty() {
 		return
@@ -48,6 +49,14 @@ func mainLoopWithContext(L *LState, baseframe *callFrame) {
 		cf = L.currentFrame
 		inst = cf.Fn.Proto.Code[cf.Pc]
 		cf.Pc++
+
+		// Check abort flag
+		instrCounter++
+		if instrCounter%100 == 0 && ShouldAbort() {
+			L.RaiseError("execution interrupted (abort flag set)")
+			return
+		}
+
 		select {
 		case <-L.ctx.Done():
 			L.RaiseError(L.ctx.Err().Error())
